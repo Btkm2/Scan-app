@@ -7,6 +7,7 @@ Helper class for listing, deleting, and viewing app document directory "capture"
 
 import Combine
 import Foundation
+import SwiftUI
 
 import os
 
@@ -17,6 +18,7 @@ private let logger = Logger(subsystem: "com.apple.sample.CaptureSample",
 /// background queue and includes static methods for retrieving the top-level capture folder, which contains
 /// separate subfolders for each capture. Use a different instance of this class for each capture folder.
 class CaptureFolderState: ObservableObject {
+//    @Published var folderDir: URL? = nil
     static private let workQueue = DispatchQueue(label: "CaptureFolderState.Work",
                                                  qos: .userInitiated)
     
@@ -134,6 +136,7 @@ class CaptureFolderState: ObservableObject {
             .appendingPathComponent(timestamp + "/", isDirectory: true)
         
         logger.log("Creating capture path: \"\(String(describing: newCaptureDir))\"")
+//        print("captureDir: \(folderD)")
         let capturePath = newCaptureDir.path
         do {
             try FileManager.default.createDirectory(atPath: capturePath,
@@ -147,6 +150,9 @@ class CaptureFolderState: ObservableObject {
             return nil
         }
         return newCaptureDir
+    }
+    func returnDir(captureDir: URL?) -> URL? {
+        return captureDir
     }
     
     /// This method returns a `Future` instance that's populated with a list of capture folders sorted by creation date.

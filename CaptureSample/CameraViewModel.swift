@@ -91,6 +91,8 @@ class CameraViewModel: ObservableObject {
     /// If `isAutoCaptureActive` is `true`, this property contains the number of seconds until the
     /// next capture trigger.
     @Published var timeUntilCaptureSecs: Double = 0
+    
+    @Published var sharedCaptureDir: URL? = nil
 
     var autoCaptureIntervalSecs: Double = 0
 
@@ -103,6 +105,8 @@ class CameraViewModel: ObservableObject {
     var captureDir: URL? {
         return captureFolderState?.captureDir
     }
+    
+//    self.sharedCaptureDir = self.captureDir
 
     static let maxPhotosAllowed = 250
     static let recommendedMinPhotos = 30
