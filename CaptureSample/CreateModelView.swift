@@ -20,12 +20,15 @@ struct CreateModelView: View {
     @State var input: String = ""///Stores value of input field
     @State var gallery_toogle = false///Stores state of gallery picker view
     @State var camera_toggle = false///Stores state of camera picker view
+    @State var ARQuickLookPreview_toggle = false///Stores state of ARQuickLookPreview
     @State var images: [UIImage] = [] ///Array of selected images. For now it only stores images that are selected from gallery
     @ObservedObject var model: CameraViewModel
     @StateObject var folderState = GalleryFolderState()
+    @StateObject var downloadFolder = DownloadFileFolderState()
 //    @StateObject var model = CaptureFolderState().
 //    @State var sendDataToggle = false
     @State var holder: URL? ///Holder to store path of new folder
+    @State var url: URL?///Holder to store path of downloaded models
     var body: some View {
         VStack {
             NavigationView {
@@ -61,7 +64,15 @@ struct CreateModelView: View {
                                     .foregroundColor(Color.black)
                             }
                         })
-                        Text("Select at least 20 images")
+                        if images.count < 20 {
+                            Text("Select at least 20 images")
+                                .foregroundColor(Color.red)
+                                .font(.system(size: 8, weight: .medium, design: .default))
+                        }else {
+                            Text("Ready to send images!")
+                                .foregroundColor(Color.green)
+                                .font(.system(size: 8, weight: .medium, design: .default))
+                        }
                     }
                     Section{
                         if !images.isEmpty {
@@ -109,6 +120,23 @@ struct CreateModelView: View {
                     }, label: {
                         Text("Zip folder")
                     })
+                    Button(action: {
+                        let downloadPath = downloadFolder.createDownloadedFileDirectory()?.absoluteURL
+                        do {
+                            url = try downloadPath?.asURL()
+                        } catch {
+                            print(error)
+                        }
+                        downloadFile(path: url)
+                    }, label: {
+                        Text("Download Model")
+                    })
+                    Button(action: {
+                        ARQuickLookPreview_toggle = true
+                        print("url: \(url?.relativePath)")
+                    }, label: {
+                        Text("Preview model")
+                    })
                 }
                 .navigationTitle("New Order")
             }
@@ -127,6 +155,9 @@ struct CreateModelView: View {
                 //                .ignoresSafeArea()
                 //            CameraView(model: CameraViewModel())
                 //                .ignoresSafeArea()
+            })
+            .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
+                ARQuickLookView(name: "Test", path: url)
             })
             
         }
@@ -225,7 +256,7 @@ struct CreateModelView: View {
         return temp
     }
     func sendZipToServer(path: URL?) {
-        let ngrok_url = URL(string: "https://d0c2-92-46-106-55.eu.ngrok.io/upload")!
+        let ngrok_url = URL(string: "https://5ee5-178-88-10-145.eu.ngrok.io/upload")!
         guard let unwrpPath = path else {
             return
         }
@@ -234,6 +265,25 @@ struct CreateModelView: View {
         }, to: ngrok_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
             debugPrint(data)
         })
+    }
+    func downloadFile(path: URL?) {
+        let test_ngrok = URL(string: "http://localhost:8080/downloadFile")
+        let ngrok_url = URL(string: "https://e1af-178-88-10-145.eu.ngrok.io/downloadFile")
+        guard let unwrpPath = path else {
+            return
+        }
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 400
+        AF.session.configuration.timeoutIntervalForRequest = 400
+        let destination: DownloadRequest.Destination = { _ , _ in
+            
+            let saveURL = unwrpPath.appendingPathComponent("Test.usdz")
+            
+            return (saveURL, [.removePreviousFile])
+        }
+        AF.download(ngrok_url!, method: .get, to:destination).response { response in
+            debugPrint(response)
+        }
     }
 }
 
