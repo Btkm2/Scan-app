@@ -19,15 +19,15 @@ struct WelcomePageView: View {
                         Image(systemName: "plus.viewfinder")
                             .padding(.trailing,20)
                         VStack(alignment:.leading) {
-                            NavigationLink("Create a 3D Model", destination: CreateModelView(model: model))
+                            NavigationLink("Create a 3D Model", destination: CreateModelView(model: model)).navigationBarBackButtonHidden(true)
                             Text("Free")
                         }
                     }
-                        .padding(.all,10)
+                    .padding(.all,10)
                 }
             }
+            .navigationBarBackButtonHidden(false)
         }
-        .navigationTitle("Hello")
     }
 }
 

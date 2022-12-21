@@ -33,19 +33,39 @@ struct ARViewTypeChoiceView: View {
     
     var body: some View {
         VStack {
-            Picker("AR", selection: $selectedItems) {
-                ForEach(Views.allCases, id: \.self) {
-                    Text($0.rawValue)
+            HStack {
+                Button(action: {
+                    
+                }, label: {
+                    Image(systemName: "xmark")
+                        .resizable()
+                        .renderingMode( .template)
+                        .aspectRatio(contentMode: .fit)
+                        .padding(.all, 7.5)
+                        .background(Color("Gray"))
+                        .foregroundColor(Color.white)
+                        .frame(width: 40, height: 40, alignment: .center)
+                        .padding([.trailing, .top, .bottom], 5)
+                        .padding(.leading, 10)
+                        .cornerRadius(5)
+                })
+                Picker("AR", selection: $selectedItems) {
+                    ForEach(Views.allCases, id: \.self) {
+                        Text($0.rawValue)
+                    }
                 }
+                .pickerStyle(.segmented)
+                .padding()
+                .padding(.trailing, 10)
+                Spacer()
             }
-            .pickerStyle(.segmented)
-            .padding()
             
             Spacer()
             SelectedView(url: $url, selectedView: selectedItems)
                 .ignoresSafeArea(edges: .bottom)
             Spacer()
         }
+        .ignoresSafeArea(edges: .bottom)
     }
 }
 

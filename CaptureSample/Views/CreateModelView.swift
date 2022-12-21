@@ -34,15 +34,19 @@ struct CreateModelView: View {
         VStack {
             NavigationView {
                 Form {
-                    Section(header: Text("Name")){
+                    Section(header: Text("Name"), footer: Text(input.isEmpty ? "Please enter name of your order" : "") //MARK: This called ternary operator
+                        .foregroundColor(Color.red)
+                    ){
                         TextField("Name your order", text: $input)
                     }
-                    Section(header: Text("Add Photos")) {
+                    Section(header: Text("Add Photos"), footer: Text(images.count < 20 ? "Please select at least 20 images" : "")
+                        .foregroundColor(Color.red)
+                    ) {
                         Button(action: {
                             gallery_toogle = true
                             print("captureDir: \(String(describing: model.captureDir?.relativePath))")
                             /// Every time when we choose to select images from gallery, new folder will be created
-                            let temp = folderState.createGalleryDirectory()?.absoluteURL
+                            let temp = folderState.createGalleryDirectory(dirName: input)?.absoluteURL
                             print(String(describing: temp))
                             do {
                                 holder = try temp?.asURL()
@@ -65,25 +69,27 @@ struct CreateModelView: View {
                                     .foregroundColor(Color.black)
                             }
                         })
-                        if images.count < 20 {
-                            Text("Select at least 20 images")
-                                .foregroundColor(Color.red)
-                                .font(.system(size: 8, weight: .medium, design: .default))
-                        }else {
-                            Text("Ready to send images!")
-                                .foregroundColor(Color.green)
-                                .font(.system(size: 8, weight: .medium, design: .default))
-                        }
+//                        if images.count < 20 {
+//                            Text("Select at least 20 images")
+//                                .foregroundColor(Color.red)
+//                                .font(.system(size: 8, weight: .medium, design: .default))
+//                        }else {
+//                            Text("Ready to send images!")
+//                                .foregroundColor(Color.green)
+//                                .font(.system(size: 8, weight: .medium, design: .default))
+//                        }
                     }
-                    Section{
+                    Section(header: Text("Preview selected images")){
                         if !images.isEmpty {
-                            HStack{
-                                ForEach(images, id: \.self) { image in
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .renderingMode(.original)
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 40,height: 40)
+                            ScrollView(.horizontal, showsIndicators: true) {
+                                HStack{
+                                    ForEach(images, id: \.self) { image in
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .renderingMode(.original)
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 40,height: 40)
+                                    }
                                 }
                             }
                         }else{
@@ -94,8 +100,9 @@ struct CreateModelView: View {
                     var hold = ""
                     //send images to server
                     Button(action:{
+                        writeImagesToFolder(images: images, path: holder)
                         sendZipToServer(path: archiveFolder(path: holder))
-                        logger.log("Send zip")
+                        logger.log("Starting sending zip to server")
                     }, label:{
                         HStack {
                             Image(systemName:"icloud.fill")
@@ -103,7 +110,7 @@ struct CreateModelView: View {
                                 .foregroundColor(Color.black)
                             
                         }
-                    })
+                    }).disabled(input.isEmpty ? true : false)
                     Button(action: {
                         DispatchQueue.global(qos: .userInitiated).async {
                             writeImagesToFolder(images: images, path: holder)
@@ -132,6 +139,7 @@ struct CreateModelView: View {
                     })
                 }
                 .navigationTitle("New Order")
+                .navigationBarBackButtonHidden(true)
             }
             .sheet(isPresented: $gallery_toogle, content:{
                 PhotoLibraryPickerView(images: $images, picker: $gallery_toogle)
@@ -149,6 +157,8 @@ struct CreateModelView: View {
                 ARViewTypeChoiceView(url: $url_holder)
             })
         }
+        .edgesIgnoringSafeArea(.top)
+        .navigationBarBackButtonHidden(true)
     }
     
     func senData(images: [UIImage]) -> String{
@@ -209,7 +219,7 @@ struct CreateModelView: View {
         }
         for image in images {
             let writePath = unwrpPath.appendingPathComponent("\(UUID().uuidString).jpeg")
-            if let data = image.jpegData(compressionQuality: 0.9) {
+            if let data = image.jpegData(compressionQuality: 0.5) {
                 do {
                     try data.write(to: writePath)
                 } catch {
@@ -228,7 +238,7 @@ struct CreateModelView: View {
         }
         do {
             let zipFilePath = unwrpPath.appendingPathComponent("Arhive.zip")
-            let zipFile = try Zip.quickZipFiles([unwrpPath],fileName: "archive.zip" )
+//            let zipFile = try Zip.quickZipFiles([unwrpPath],fileName: "archive.zip" )
             try Zip.zipFiles(paths: [unwrpPath], zipFilePath: zipFilePath, password: nil, progress: { (progress) -> () in
                 print(progress)
             })
@@ -243,6 +253,9 @@ struct CreateModelView: View {
         guard let unwrpPath = path else {
             return
         }
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 400
+        AF.session.configuration.timeoutIntervalForRequest = 400
         AF.upload(multipartFormData: { (multipartData) in
             multipartData.append(unwrpPath, withName: "files[]")
         }, to: ngrok_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in

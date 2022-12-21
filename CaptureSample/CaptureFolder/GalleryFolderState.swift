@@ -27,7 +27,7 @@ class GalleryFolderState: ObservableObject {
         return documentFolder.appendingPathComponent("Captures/Gallery", isDirectory: true)
     }
     
-    func createGalleryDirectory() -> URL? {
+    func createGalleryDirectory(dirName: String) -> URL? {
         guard let galleryFolder = GalleryFolderState.galleryDir() else {
             logger.error("Can't get user document dir!")
             return nil
@@ -39,7 +39,7 @@ class GalleryFolderState: ObservableObject {
         formatter.timeStyle = .medium
         let timestamp = formatter.string(from: Date())
         let newGalleryDir = galleryFolder
-            .appendingPathComponent(timestamp + "/", isDirectory: true)
+            .appendingPathComponent(dirName + "/", isDirectory: true)
         
         logger.log("Creating gallery path: \"\(String(describing: newGalleryDir))\"")
         let galleryPath = newGalleryDir.path
