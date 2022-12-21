@@ -124,7 +124,7 @@ struct ARQuickLookView: UIViewControllerRepresentable {
     // Properties: the file name (without extension), and whether we'll let
     // the user scale the preview content.
     var name: String
-    var path: URL?
+    @Binding var path: URL?
     var allowScaling: Bool = true
     
     func makeCoordinator() -> ARQuickLookView.Coordinator {
@@ -149,8 +149,8 @@ struct ARQuickLookView: UIViewControllerRepresentable {
     class Coordinator: NSObject, QLPreviewControllerDataSource {
         let parent: ARQuickLookView
         let url_path: URL?
-        private lazy var fileURL: URL = Bundle.main.url(forResource: parent.name,
-                                                        withExtension: "reality")!
+//        private lazy var fileURL: URL = Bundle.main.url(forResource: parent.name,
+//                                                        withExtension: "reality")!
         
         init(_ parent: ARQuickLookView, path: URL?) {
             self.parent = parent
@@ -169,21 +169,26 @@ struct ARQuickLookView: UIViewControllerRepresentable {
             _ controller: QLPreviewController,
             previewItemAt index: Int
         ) -> QLPreviewItem {
-            guard let fileURL = url_path?.relativePath else {
+            print(String(describing: url_path))
+            guard let fileURL = url_path else {
                 logger.error("Unable to find and preview file")
 //                return CustomError.SomeError as! QLPreviewItem
                 return ARQuickLookPreviewItem(fileAt: URL(string: "/null")!)
             }
+//            guard let new_url = fileURL else {
+//                logger.error("Unable to unwrap optional")
+//                return ARQuickLookPreviewItem(fileAt: URL(string: "/null")!)
+//            }
             
-            let item = ARQuickLookPreviewItem(fileAt: URL(string: fileURL + "/Test.usdz")!)
+            let item = ARQuickLookPreviewItem(fileAt: URL(string: "\(fileURL)/Test.usdz")!)
             item.allowsContentScaling = parent.allowScaling
             return item
         }
     }
 }
 
-struct ARQuickLookView_Previews: PreviewProvider {
-    static var previews: some View {
-        ARQuickLookView(name: "Test")
-    }
-}
+//struct ARQuickLookView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ARQuickLookView(name: "Test", path: <#T##Binding<URL?>#>)
+//    }
+//}

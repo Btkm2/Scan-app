@@ -13,6 +13,8 @@
 		0C2E6D5C2915153E00BB48EE /* PhotoLibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2E6D5B2915153E00BB48EE /* PhotoLibraryPickerView.swift */; };
 		0C659C7D294E06E3009926E9 /* DownloadFileFolderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C659C7C294E06E3009926E9 /* DownloadFileFolderState.swift */; };
 		0C659C802950713E009926E9 /* ARQuickLookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C659C7F2950713E009926E9 /* ARQuickLookView.swift */; };
+		0C8FCD042951EA2400B9E181 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FCD032951EA2400B9E181 /* ARView.swift */; };
+		0C8FCD062951F01100B9E181 /* ARViewTypeChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8FCD052951F01100B9E181 /* ARViewTypeChoiceView.swift */; };
 		0C9490EA2921156D00E6936F /* CameraPhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C9490E92921156D00E6936F /* CameraPhotoPickerView.swift */; };
 		0C9490ED2925579700E6936F /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0C9490EC2925579700E6936F /* Alamofire */; };
 		0CD0B328293C99050069FFF7 /* GalleryFolderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD0B327293C99050069FFF7 /* GalleryFolderState.swift */; };
@@ -45,6 +47,8 @@
 		0C2E6D5B2915153E00BB48EE /* PhotoLibraryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPickerView.swift; sourceTree = "<group>"; };
 		0C659C7C294E06E3009926E9 /* DownloadFileFolderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFileFolderState.swift; sourceTree = "<group>"; };
 		0C659C7F2950713E009926E9 /* ARQuickLookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARQuickLookView.swift; sourceTree = "<group>"; };
+		0C8FCD032951EA2400B9E181 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
+		0C8FCD052951F01100B9E181 /* ARViewTypeChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewTypeChoiceView.swift; sourceTree = "<group>"; };
 		0C9490E92921156D00E6936F /* CameraPhotoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPhotoPickerView.swift; sourceTree = "<group>"; };
 		0CD0B327293C99050069FFF7 /* GalleryFolderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryFolderState.swift; sourceTree = "<group>"; };
 		7BAFE7282618093500D2299C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -86,12 +90,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0C659C7E2950711A009926E9 /* ARQuickView */ = {
+		0C659C7E2950711A009926E9 /* AR */ = {
 			isa = PBXGroup;
 			children = (
 				0C659C7F2950713E009926E9 /* ARQuickLookView.swift */,
+				0C8FCD032951EA2400B9E181 /* ARView.swift */,
 			);
-			path = ARQuickView;
+			path = AR;
+			sourceTree = "<group>";
+		};
+		0C659C812950B802009926E9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0C2E6D552915146C00BB48EE /* SplashScreenView.swift */,
+				0C2E6D57291514E700BB48EE /* WelcomePageView.swift */,
+				0C2E6D592915150000BB48EE /* CreateModelView.swift */,
+				0C2E6D5B2915153E00BB48EE /* PhotoLibraryPickerView.swift */,
+				0C9490E92921156D00E6936F /* CameraPhotoPickerView.swift */,
+				0C8FCD052951F01100B9E181 /* ARViewTypeChoiceView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		0CD0B326293C98C50069FFF7 /* CaptureFolder */ = {
@@ -135,7 +153,7 @@
 		C9E38E1125C8CB5B00171AB3 /* CaptureSample */ = {
 			isa = PBXGroup;
 			children = (
-				0C659C7E2950711A009926E9 /* ARQuickView */,
+				0C659C7E2950711A009926E9 /* AR */,
 				C9BA144425EF052300A19324 /* AsyncImageHelpers.swift */,
 				C96059EE25CA1FB100FDB64F /* CameraViewModel.swift */,
 				0CD0B326293C98C50069FFF7 /* CaptureFolder */,
@@ -155,11 +173,7 @@
 				C9E38E1625C8CB5D00171AB3 /* Assets.xcassets */,
 				C9E38E1B25C8CB5D00171AB3 /* Info.plist */,
 				C9E38E1825C8CB5D00171AB3 /* Preview Content */,
-				0C2E6D552915146C00BB48EE /* SplashScreenView.swift */,
-				0C2E6D57291514E700BB48EE /* WelcomePageView.swift */,
-				0C2E6D592915150000BB48EE /* CreateModelView.swift */,
-				0C2E6D5B2915153E00BB48EE /* PhotoLibraryPickerView.swift */,
-				0C9490E92921156D00E6936F /* CameraPhotoPickerView.swift */,
+				0C659C812950B802009926E9 /* Views */,
 			);
 			path = CaptureSample;
 			sourceTree = "<group>";
@@ -259,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9516AD925F085B200DA396D /* TimerView.swift in Sources */,
+				0C8FCD042951EA2400B9E181 /* ARView.swift in Sources */,
 				C91EEE4D25EDBE46009FD603 /* CaptureFolderState.swift in Sources */,
 				0C2E6D562915146C00BB48EE /* SplashScreenView.swift in Sources */,
 				C9BF99A125E0808D00707ADC /* ImageLoader.swift in Sources */,
@@ -270,6 +285,7 @@
 				C96059EF25CA1FB100FDB64F /* CameraViewModel.swift in Sources */,
 				0CD0B328293C99050069FFF7 /* GalleryFolderState.swift in Sources */,
 				C9A2DCE825F803A8005DCCBB /* CaptureInfo.swift in Sources */,
+				0C8FCD062951F01100B9E181 /* ARViewTypeChoiceView.swift in Sources */,
 				C9BF999E25E07A5200707ADC /* CaptureGalleryView.swift in Sources */,
 				C9E38E1525C8CB5B00171AB3 /* ContentView.swift in Sources */,
 				0C659C802950713E009926E9 /* ARQuickLookView.swift in Sources */,

@@ -29,6 +29,7 @@ struct CreateModelView: View {
 //    @State var sendDataToggle = false
     @State var holder: URL? ///Holder to store path of new folder
     @State var url: URL?///Holder to store path of downloaded models
+    @State var url_holder: URL?
     var body: some View {
         VStack {
             NavigationView {
@@ -93,16 +94,7 @@ struct CreateModelView: View {
                     var hold = ""
                     //send images to server
                     Button(action:{
-//                        DispatchQueue.main.async {
-//                            archiveFolder(path: holder)
-//                        }
                         sendZipToServer(path: archiveFolder(path: holder))
-//                        sendDataToggle = true
-//                        let temp_str = senData(images: images)
-//                        hold = temp_str
-//                        print("|------------------| \n")
-//                        print("\(hold.isEmpty) \n")
-//                        print("🟢 \(temp_str)")
                         logger.log("Send zip")
                     }, label:{
                         HStack {
@@ -124,6 +116,7 @@ struct CreateModelView: View {
                         let downloadPath = downloadFolder.createDownloadedFileDirectory()?.absoluteURL
                         do {
                             url = try downloadPath?.asURL()
+                            url_holder = url
                         } catch {
                             print(error)
                         }
@@ -140,15 +133,8 @@ struct CreateModelView: View {
                 }
                 .navigationTitle("New Order")
             }
-            .sheet(isPresented: $gallery_toogle, onDismiss: {
-//                writeImagesToFolder(images: images, path: holder)
-            }, content:{
-                PhotoLibraryPickerView(images: $images, picker: $gallery_toogle).onSubmit {
-//                    writeImagesToFolder(images: images, path: holder)
-                }
-                .onDisappear {
-//                    writeImagesToFolder(images: images, path: holder)
-                }
+            .sheet(isPresented: $gallery_toogle, content:{
+                PhotoLibraryPickerView(images: $images, picker: $gallery_toogle)
             })
             .sheet(isPresented: $camera_toggle, content: {
                 CameraPhotoPicker()
@@ -156,16 +142,13 @@ struct CreateModelView: View {
                 //            CameraView(model: CameraViewModel())
                 //                .ignoresSafeArea()
             })
+//            .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
+//                ARQuickLookView(name: "Test", path: $url_holder)
+//            })
             .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
-                ARQuickLookView(name: "Test", path: url)
+                ARViewTypeChoiceView(url: $url_holder)
             })
-            
         }
-//        .backgroundTask(action: {
-//            if sendDataToggle {
-//                senData(images: images)
-//            }
-//        })
     }
     
     func senData(images: [UIImage]) -> String{
@@ -256,7 +239,7 @@ struct CreateModelView: View {
         return temp
     }
     func sendZipToServer(path: URL?) {
-        let ngrok_url = URL(string: "https://5ee5-178-88-10-145.eu.ngrok.io/upload")!
+        let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/upload")!
         guard let unwrpPath = path else {
             return
         }
@@ -268,7 +251,7 @@ struct CreateModelView: View {
     }
     func downloadFile(path: URL?) {
         let test_ngrok = URL(string: "http://localhost:8080/downloadFile")
-        let ngrok_url = URL(string: "https://e1af-178-88-10-145.eu.ngrok.io/downloadFile")
+        let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/downloadFile")
         guard let unwrpPath = path else {
             return
         }
