@@ -28,6 +28,7 @@ struct SelectedView: View {
 }
 
 struct ARViewTypeChoiceView: View {
+    @Binding var isPresented: Bool
     @Binding var url: URL?
     @State var selectedItems: Views = .ARQuickLookView
     
@@ -35,7 +36,7 @@ struct ARViewTypeChoiceView: View {
         VStack {
             HStack {
                 Button(action: {
-                    
+                    isPresented = false
                 }, label: {
                     Image(systemName: "xmark")
                         .resizable()
@@ -43,11 +44,13 @@ struct ARViewTypeChoiceView: View {
                         .aspectRatio(contentMode: .fit)
                         .padding(.all, 7.5)
                         .background(Color("Gray"))
+//                        .background(Color.red)
                         .foregroundColor(Color.white)
-                        .frame(width: 40, height: 40, alignment: .center)
+                        .frame(width: 30, height: 30, alignment: .center)
+                        .cornerRadius(8)
                         .padding([.trailing, .top, .bottom], 5)
                         .padding(.leading, 10)
-                        .cornerRadius(5)
+//                        .cornerRadius(10)
                 })
                 Picker("AR", selection: $selectedItems) {
                     ForEach(Views.allCases, id: \.self) {
@@ -72,6 +75,6 @@ struct ARViewTypeChoiceView: View {
 struct ARViewTypeChoiceView_Previews: PreviewProvider {
     @State static var url: URL?
     static var previews: some View {
-        ARViewTypeChoiceView(url: $url)
+        ARViewTypeChoiceView(isPresented: .constant(true), url: $url)
     }
 }

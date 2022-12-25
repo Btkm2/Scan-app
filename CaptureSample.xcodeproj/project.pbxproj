@@ -19,6 +19,7 @@
 		0C9490ED2925579700E6936F /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0C9490EC2925579700E6936F /* Alamofire */; };
 		0CD0B328293C99050069FFF7 /* GalleryFolderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD0B327293C99050069FFF7 /* GalleryFolderState.swift */; };
 		0CD0B32B293CA90A0069FFF7 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = 0CD0B32A293CA90A0069FFF7 /* Zip */; };
+		0CE2043C295759E6007D9FAC /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 0CE2043B295759E6007D9FAC /* AlertToast */; };
 		C91EEE4B25EDA200009FD603 /* CaptureFoldersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91EEE4A25EDA200009FD603 /* CaptureFoldersView.swift */; };
 		C91EEE4D25EDBE46009FD603 /* CaptureFolderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91EEE4C25EDBE46009FD603 /* CaptureFolderState.swift */; };
 		C94968AE25F2C24100540756 /* InfoPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94968AD25F2C24100540756 /* InfoPanelView.swift */; };
@@ -82,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CE2043C295759E6007D9FAC /* AlertToast in Frameworks */,
 				0CD0B32B293CA90A0069FFF7 /* Zip in Frameworks */,
 				0C9490ED2925579700E6936F /* Alamofire in Frameworks */,
 			);
@@ -213,6 +215,7 @@
 			packageProductDependencies = (
 				0C9490EC2925579700E6936F /* Alamofire */,
 				0CD0B32A293CA90A0069FFF7 /* Zip */,
+				0CE2043B295759E6007D9FAC /* AlertToast */,
 			);
 			productName = CaptureSample;
 			productReference = C9E38E0F25C8CB5B00171AB3 /* CaptureSample.app */;
@@ -245,6 +248,7 @@
 			packageReferences = (
 				0C9490EB2925579700E6936F /* XCRemoteSwiftPackageReference "Alamofire" */,
 				0CD0B329293CA90A0069FFF7 /* XCRemoteSwiftPackageReference "Zip" */,
+				0CE2043A295759E6007D9FAC /* XCRemoteSwiftPackageReference "AlertToast" */,
 			);
 			productRefGroup = C9E38E1025C8CB5B00171AB3 /* Products */;
 			projectDirPath = "";
@@ -505,6 +509,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		0CE2043A295759E6007D9FAC /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -517,6 +529,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0CD0B329293CA90A0069FFF7 /* XCRemoteSwiftPackageReference "Zip" */;
 			productName = Zip;
+		};
+		0CE2043B295759E6007D9FAC /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CE2043A295759E6007D9FAC /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

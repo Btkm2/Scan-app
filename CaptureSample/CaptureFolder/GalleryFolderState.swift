@@ -56,4 +56,17 @@ class GalleryFolderState: ObservableObject {
         }
         return newGalleryDir
     }
+    
+    func isDirectoryExists(dirName: String) -> Bool {
+        guard let hold = GalleryFolderState.galleryDir()?.relativePath else {
+            return false
+        }
+        var isDir: ObjCBool = false
+        if FileManager.default.fileExists(atPath: hold + "\(dirName)", isDirectory: &isDir) {
+            print(hold + "\(dirName)")
+            print("exists!!!!!!")
+            return true
+        }
+        return false
+    }
 }

@@ -14,8 +14,11 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // Make the entire background black.
-            Color.black.edgesIgnoringSafeArea(.all)
-            CameraView(model: model)
+            Color.black.edgesIgnoringSafeArea([.bottom, .leading, .trailing])
+            VStack {
+                
+                CameraView(model: model)
+            }
         }
         // Force dark mode so the photos pop.
         .environment(\.colorScheme, .dark)

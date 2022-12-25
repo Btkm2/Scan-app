@@ -13,6 +13,7 @@ import Foundation
 import ObjectiveC
 import os
 import Zip
+import AlertToast
 
 private var logger = Logger(subsystem: "com.apple.sample.CaptureSample", category: "CreateModelView")
 
@@ -30,6 +31,7 @@ struct CreateModelView: View {
     @State var holder: URL? ///Holder to store path of new folder
     @State var url: URL?///Holder to store path of downloaded models
     @State var url_holder: URL?
+    @State var toast_toggle = false ///Toggle that stores state of error toast
     var body: some View {
         VStack {
             NavigationView {
@@ -38,6 +40,20 @@ struct CreateModelView: View {
                         .foregroundColor(Color.red)
                     ){
                         TextField("Name your order", text: $input)
+//                            .onChange(of: input, perform: {newValue in
+//                                if folderState.isDirectoryExists(dirName: input) {
+//                                    toast_toggle = true
+//                                }else {
+//                                    print("FALSE!!!")
+//                                }
+//                            })
+                            .onSubmit {
+                                if folderState.isDirectoryExists(dirName: input) {
+                                    toast_toggle = true
+                                }else {
+                                    print("FALSE from onSubmit!!!")
+                                }
+                            }
                     }
                     Section(header: Text("Add Photos"), footer: Text(images.count < 20 ? "Please select at least 20 images" : "")
                         .foregroundColor(Color.red)
@@ -69,15 +85,6 @@ struct CreateModelView: View {
                                     .foregroundColor(Color.black)
                             }
                         })
-//                        if images.count < 20 {
-//                            Text("Select at least 20 images")
-//                                .foregroundColor(Color.red)
-//                                .font(.system(size: 8, weight: .medium, design: .default))
-//                        }else {
-//                            Text("Ready to send images!")
-//                                .foregroundColor(Color.green)
-//                                .font(.system(size: 8, weight: .medium, design: .default))
-//                        }
                     }
                     Section(header: Text("Preview selected images")){
                         if !images.isEmpty {
@@ -110,7 +117,8 @@ struct CreateModelView: View {
                                 .foregroundColor(Color.black)
                             
                         }
-                    }).disabled(input.isEmpty ? true : false)
+                    })
+                    //.disabled(input.isEmpty ? true : false) //MARK: Uncomment this
                     Button(action: {
                         DispatchQueue.global(qos: .userInitiated).async {
                             writeImagesToFolder(images: images, path: holder)
@@ -145,16 +153,18 @@ struct CreateModelView: View {
                 PhotoLibraryPickerView(images: $images, picker: $gallery_toogle)
             })
             .sheet(isPresented: $camera_toggle, content: {
-                CameraPhotoPicker()
+//                CameraPhotoPicker()
+                ContentView(model: model)
+                    .ignoresSafeArea(edges: [.bottom, .trailing, .leading])
                 //                .ignoresSafeArea()
                 //            CameraView(model: CameraViewModel())
                 //                .ignoresSafeArea()
             })
-//            .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
-//                ARQuickLookView(name: "Test", path: $url_holder)
-//            })
             .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
-                ARViewTypeChoiceView(url: $url_holder)
+                ARViewTypeChoiceView(isPresented: $ARQuickLookPreview_toggle, url: $url_holder)
+            })
+            .toast(isPresenting: $toast_toggle, alert: {
+                AlertToast(displayMode: .hud, type: .error(Color.red), title: "Order with this name already exists")
             })
         }
         .edgesIgnoringSafeArea(.top)
@@ -249,6 +259,7 @@ struct CreateModelView: View {
         return temp
     }
     func sendZipToServer(path: URL?) {
+        let test_local_url = URL(string: "http://127.0.0.1:8080/upload")
         let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/upload")!
         guard let unwrpPath = path else {
             return
@@ -260,6 +271,8 @@ struct CreateModelView: View {
             multipartData.append(unwrpPath, withName: "files[]")
         }, to: ngrok_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
             debugPrint(data)
+        }).uploadProgress(closure: { (progress) in
+            print("Progress: \(progress.fractionCompleted)")
         })
     }
     func downloadFile(path: URL?) {
