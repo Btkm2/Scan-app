@@ -52,7 +52,7 @@ class GalleryFolderState: ObservableObject {
         var isDir: ObjCBool = false
         let exists = FileManager.default.fileExists(atPath: galleryPath, isDirectory: &isDir)
         print(exists)
-        guard !exists && isDir.boolValue else {
+        guard exists && isDir.boolValue else {
             logger.error("Error while checking is the desired directory exists")
             return nil
         }

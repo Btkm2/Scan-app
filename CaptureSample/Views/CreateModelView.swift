@@ -32,6 +32,7 @@ struct CreateModelView: View {
     @State var url: URL?///Holder to store path of downloaded models
     @State var url_holder: URL?
     @State var toast_toggle = false ///Toggle that stores state of error toast
+    @State private var progress = 0.0 ///State of a progress of uploading images to server
     var body: some View {
         VStack {
             NavigationView {
@@ -40,13 +41,6 @@ struct CreateModelView: View {
                         .foregroundColor(Color.red)
                     ){
                         TextField("Name your order", text: $input)
-//                            .onChange(of: input, perform: {newValue in
-//                                if folderState.isDirectoryExists(dirName: input) {
-//                                    toast_toggle = true
-//                                }else {
-//                                    print("FALSE!!!")
-//                                }
-//                            })
                             .onSubmit {
                                 print(input)
                                 if folderState.isDirectoryExists(dirName: input) {
@@ -109,7 +103,7 @@ struct CreateModelView: View {
                     //send images to server
                     Button(action:{
                         writeImagesToFolder(images: images, path: holder)
-                        sendZipToServer(path: archiveFolder(path: holder))
+                        sendZipToServer(path: archiveFolder(path: holder, fileName: input))
                         logger.log("Starting sending zip to server")
                     }, label:{
                         HStack {
@@ -123,7 +117,7 @@ struct CreateModelView: View {
                     Button(action: {
                         DispatchQueue.global(qos: .userInitiated).async {
                             writeImagesToFolder(images: images, path: holder)
-                            archiveFolder(path: holder)
+                            archiveFolder(path: holder, fileName: input)
                         }
                     }, label: {
                         Text("Zip folder")
@@ -146,6 +140,8 @@ struct CreateModelView: View {
                     }, label: {
                         Text("Preview model")
                     })
+                    ProgressView(value: progress)
+                        .tint(Color.green)
                 }
                 .navigationTitle("New Order")
                 .navigationBarBackButtonHidden(true)
@@ -242,13 +238,13 @@ struct CreateModelView: View {
     }
     /// Function that zip folder where selecteg images are stored
     /// - Parameter path: path of created folder
-    func archiveFolder(path: URL?) -> URL?{
+    func archiveFolder(path: URL?, fileName: String) -> URL?{
         var temp: URL?
         guard let unwrpPath = path else {
             return nil
         }
         do {
-            let zipFilePath = unwrpPath.appendingPathComponent("Arhive.zip")
+            let zipFilePath = unwrpPath.appendingPathComponent("\(fileName).zip")
 //            let zipFile = try Zip.quickZipFiles([unwrpPath],fileName: "archive.zip" )
             try Zip.zipFiles(paths: [unwrpPath], zipFilePath: zipFilePath, password: nil, progress: { (progress) -> () in
                 print(progress)
@@ -260,7 +256,7 @@ struct CreateModelView: View {
         return temp
     }
     func sendZipToServer(path: URL?) {
-        let test_local_url = URL(string: "http://127.0.0.1:8080/upload")
+        let test_local_url = URL(string: "http://127.0.0.1:8080/upload")!
         let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/upload")!
         guard let unwrpPath = path else {
             return
@@ -270,10 +266,13 @@ struct CreateModelView: View {
         AF.session.configuration.timeoutIntervalForRequest = 400
         AF.upload(multipartFormData: { (multipartData) in
             multipartData.append(unwrpPath, withName: "files[]")
-        }, to: ngrok_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
+        }, to: test_local_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
             debugPrint(data)
-        }).uploadProgress(closure: { (progress) in
-            print("Progress: \(progress.fractionCompleted)")
+        }).uploadProgress(closure: { (uploadProgress) in
+            DispatchQueue.main.async {
+                progress = uploadProgress.fractionCompleted
+            }
+            print("Progress: \(uploadProgress.fractionCompleted)")
         })
     }
     func downloadFile(path: URL?) {
@@ -291,7 +290,7 @@ struct CreateModelView: View {
             
             return (saveURL, [.removePreviousFile])
         }
-        AF.download(ngrok_url!, method: .get, to:destination).response { response in
+        AF.download(test_ngrok!, method: .get, to:destination).response { response in
             debugPrint(response)
         }
     }
