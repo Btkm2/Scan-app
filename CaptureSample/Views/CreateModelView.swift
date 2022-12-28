@@ -48,6 +48,7 @@ struct CreateModelView: View {
 //                                }
 //                            })
                             .onSubmit {
+                                print(input)
                                 if folderState.isDirectoryExists(dirName: input) {
                                     toast_toggle = true
                                 }else {

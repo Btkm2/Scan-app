@@ -51,7 +51,9 @@ class GalleryFolderState: ObservableObject {
         }
         var isDir: ObjCBool = false
         let exists = FileManager.default.fileExists(atPath: galleryPath, isDirectory: &isDir)
-        guard exists && isDir.boolValue else {
+        print(exists)
+        guard !exists && isDir.boolValue else {
+            logger.error("Error while checking is the desired directory exists")
             return nil
         }
         return newGalleryDir
@@ -61,8 +63,10 @@ class GalleryFolderState: ObservableObject {
         guard let hold = GalleryFolderState.galleryDir()?.relativePath else {
             return false
         }
+        print("hold: \(hold)")
         var isDir: ObjCBool = false
-        if FileManager.default.fileExists(atPath: hold + "\(dirName)", isDirectory: &isDir) {
+        print(hold + "/\(dirName)")
+        if FileManager.default.fileExists(atPath: hold + "/\(dirName)", isDirectory: &isDir) {
             print(hold + "\(dirName)")
             print("exists!!!!!!")
             return true
