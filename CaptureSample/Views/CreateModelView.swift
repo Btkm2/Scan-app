@@ -329,7 +329,7 @@ struct CreateModelView: View {
             return (saveURL, [.removePreviousFile])
         }
         AF.download(ngrok_url!, method: .get, to:destination).response { response in
-            print(response.response?.statusCode)
+            print(response.response!.statusCode) ///Printing the response http status code for fututre checks
             debugPrint(response)
         }.downloadProgress(closure: { (downloadProgress) in
             DispatchQueue.main.async {
