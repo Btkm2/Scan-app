@@ -12,21 +12,33 @@ import SwiftUI
 struct WelcomePageView: View {
     @ObservedObject var model: CameraViewModel
     var body: some View {
-        NavigationView{
-            Section {
+        VStack {
+            NavigationView{
                 Form {
-                    HStack{
-                        Image(systemName: "plus.viewfinder")
-                            .padding(.trailing,20)
-                        VStack(alignment:.leading) {
-                            NavigationLink("Create a 3D Model", destination: CreateModelView(model: model)).navigationBarBackButtonHidden(true)
-                            Text("Free")
+                    Section {
+                        Button (action: {
+                            
+                        }, label: {
+                            Text("Press me!")
+                        })
+                        .onTapGesture {
+                            print("Pressed")
                         }
                     }
-                    .padding(.all,10)
+                    Section {
+                        HStack{
+                            Image(systemName: "plus.viewfinder")
+                                .padding(.trailing,20)
+                            VStack(alignment:.leading) {
+                                NavigationLink("Create a 3D Model", destination: CreateModelView(model: model))
+                                Text("Free")
+                            }
+                        }
+                        .padding(.all,10)
+                    }
                 }
+                .navigationBarBackButtonHidden(false)
             }
-            .navigationBarBackButtonHidden(false)
         }
     }
 }

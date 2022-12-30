@@ -33,6 +33,8 @@ struct CreateModelView: View {
     @State var url_holder: URL?
     @State var toast_toggle = false ///Toggle that stores state of error toast
     @State private var progress = 0.0 ///State of a progress of uploading images to server
+    @State private var upload_button_state = false ///State of upload button
+    @State private var download_button_state = false ///State of sownload button
     var body: some View {
         VStack {
             NavigationView {
@@ -102,6 +104,9 @@ struct CreateModelView: View {
                     var hold = ""
                     //send images to server
                     Button(action:{
+                        progress = 0.0
+                        download_button_state = false
+                        upload_button_state = true
                         writeImagesToFolder(images: images, path: holder)
                         sendZipToServer(path: archiveFolder(path: holder, fileName: input))
                         logger.log("Starting sending zip to server")
@@ -114,15 +119,18 @@ struct CreateModelView: View {
                         }
                     })
                     //.disabled(input.isEmpty ? true : false) //MARK: Uncomment this
+                    //                    Button(action: {
+                    //                        DispatchQueue.global(qos: .userInitiated).async {
+                    //                            writeImagesToFolder(images: images, path: holder)
+                    //                            archiveFolder(path: holder, fileName: input)
+                    //                        }
+                    //                    }, label: {
+                    //                        Text("Zip folder")
+                    //                    })
                     Button(action: {
-                        DispatchQueue.global(qos: .userInitiated).async {
-                            writeImagesToFolder(images: images, path: holder)
-                            archiveFolder(path: holder, fileName: input)
-                        }
-                    }, label: {
-                        Text("Zip folder")
-                    })
-                    Button(action: {
+                        upload_button_state = false
+                        download_button_state = true
+                        progress = 0.0
                         let downloadPath = downloadFolder.createDownloadedFileDirectory()?.absoluteURL
                         do {
                             url = try downloadPath?.asURL()
@@ -130,7 +138,7 @@ struct CreateModelView: View {
                         } catch {
                             print(error)
                         }
-                        downloadFile(path: url)
+                        downloadFile(path: url, fileName: input)
                     }, label: {
                         Text("Download Model")
                     })
@@ -140,8 +148,41 @@ struct CreateModelView: View {
                     }, label: {
                         Text("Preview model")
                     })
-                    ProgressView(value: progress)
-                        .tint(Color.green)
+                        VStack(alignment: .leading) {
+                            if upload_button_state {
+                                HStack {
+                                    Image(systemName: "tray.and.arrow.up")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 15, height: 15)
+                                    Text("Upload progress")
+                                        .font(.system(size: 10, weight: .light, design: .default))
+                                        .onAppear {
+                                            download_button_state = false
+                                        }
+                                }
+                            }else if download_button_state {
+                                HStack {
+                                    Image(systemName: "tray.and.arrow.down")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 15, height: 15)
+                                    Text("Download progress")
+                                        .font(.system(size: 10, weight: .light, design: .default))
+                                        .onAppear {
+                                            upload_button_state = false
+                                        }
+                                }
+                            }else {
+                                Text("")
+                                    .onAppear {
+                                        download_button_state = false
+                                        upload_button_state = false
+                                    }
+                            }
+                            ProgressView(value: progress)
+                                .tint(Color.green)
+                    }
                 }
                 .navigationTitle("New Order")
                 .navigationBarBackButtonHidden(true)
@@ -153,9 +194,6 @@ struct CreateModelView: View {
 //                CameraPhotoPicker()
                 ContentView(model: model)
                     .ignoresSafeArea(edges: [.bottom, .trailing, .leading])
-                //                .ignoresSafeArea()
-                //            CameraView(model: CameraViewModel())
-                //                .ignoresSafeArea()
             })
             .sheet(isPresented: $ARQuickLookPreview_toggle, content: {
                 ARViewTypeChoiceView(isPresented: $ARQuickLookPreview_toggle, url: $url_holder)
@@ -257,7 +295,7 @@ struct CreateModelView: View {
     }
     func sendZipToServer(path: URL?) {
         let test_local_url = URL(string: "http://127.0.0.1:8080/upload")!
-        let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/upload")!
+        let ngrok_url = URL(string: "https://a068-95-56-59-247.eu.ngrok.io/upload")!
         guard let unwrpPath = path else {
             return
         }
@@ -266,7 +304,7 @@ struct CreateModelView: View {
         AF.session.configuration.timeoutIntervalForRequest = 400
         AF.upload(multipartFormData: { (multipartData) in
             multipartData.append(unwrpPath, withName: "files[]")
-        }, to: test_local_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
+        }, to: ngrok_url,method: HTTPMethod.post).responseJSON(completionHandler: { (data) in
             debugPrint(data)
         }).uploadProgress(closure: { (uploadProgress) in
             DispatchQueue.main.async {
@@ -275,9 +313,9 @@ struct CreateModelView: View {
             print("Progress: \(uploadProgress.fractionCompleted)")
         })
     }
-    func downloadFile(path: URL?) {
+    func downloadFile(path: URL?, fileName: String) {
         let test_ngrok = URL(string: "http://localhost:8080/downloadFile")
-        let ngrok_url = URL(string: "https://50a3-213-211-75-90.eu.ngrok.io/downloadFile")
+        let ngrok_url = URL(string: "https://a068-95-56-59-247.eu.ngrok.io/downloadFile/\(fileName)")
         guard let unwrpPath = path else {
             return
         }
@@ -286,13 +324,19 @@ struct CreateModelView: View {
         AF.session.configuration.timeoutIntervalForRequest = 400
         let destination: DownloadRequest.Destination = { _ , _ in
             
-            let saveURL = unwrpPath.appendingPathComponent("Test.usdz")
+            let saveURL = unwrpPath.appendingPathComponent("\(fileName).usdz")
             
             return (saveURL, [.removePreviousFile])
         }
-        AF.download(test_ngrok!, method: .get, to:destination).response { response in
+        AF.download(ngrok_url!, method: .get, to:destination).response { response in
+            print(response.response?.statusCode)
             debugPrint(response)
-        }
+        }.downloadProgress(closure: { (downloadProgress) in
+            DispatchQueue.main.async {
+                progress = downloadProgress.fractionCompleted
+            }
+            print("Download progress: \(downloadProgress.fractionCompleted)")
+        })
     }
 }
 
