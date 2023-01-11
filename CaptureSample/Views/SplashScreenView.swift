@@ -9,14 +9,15 @@
 import SwiftUI
 
 struct SplashScreenView: View {
-    @ObservedObject var model: CameraViewModel
+//    @ObservedObject var model: CameraViewModel
     @State private var isActive = false
     @State private var size = 0.8
     @State private var opacity = 0.5
     
     var body: some View {
         if isActive {
-            WelcomePageView(model: model)
+//            WelcomePageView(model: model)
+            WelcomePageView()
         }else {
             VStack{
                 VStack{
@@ -47,8 +48,9 @@ struct SplashScreenView: View {
 }
 
 struct SplashScreenView_Previews: PreviewProvider {
-    @StateObject private static var model = CameraViewModel()
+//    @StateObject private static var model = CameraViewModel()
     static var previews: some View {
-        SplashScreenView(model: model)
+//        SplashScreenView(model: model)
+        SplashScreenView()
     }
 }

@@ -23,7 +23,7 @@ struct CreateModelView: View {
     @State var camera_toggle = false///Stores state of camera picker view
     @State var ARQuickLookPreview_toggle = false///Stores state of ARQuickLookPreview
     @State var images: [UIImage] = [] ///Array of selected images. For now it only stores images that are selected from gallery
-    @ObservedObject var model: CameraViewModel
+    @StateObject var model = CameraViewModel()
     @StateObject var folderState = GalleryFolderState()
     @StateObject var downloadFolder = DownloadFileFolderState()
 //    @StateObject var model = CaptureFolderState().
@@ -341,9 +341,10 @@ struct CreateModelView: View {
 }
 
 struct CreateModelView_Previews: PreviewProvider {
-    @StateObject private static var model = CameraViewModel()
+//    @StateObject private static var model = CameraViewModel()
     static var previews: some View {
-        CreateModelView(model: model)
+//        CreateModelView(model: model)
+        CreateModelView()
     }
 }
 

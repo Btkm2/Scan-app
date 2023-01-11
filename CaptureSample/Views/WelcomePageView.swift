@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct WelcomePageView: View {
-    @ObservedObject var model: CameraViewModel
+//    @ObservedObject var model: CameraViewModel
     var body: some View {
         VStack {
             NavigationView{
@@ -30,7 +30,7 @@ struct WelcomePageView: View {
                             Image(systemName: "plus.viewfinder")
                                 .padding(.trailing,20)
                             VStack(alignment:.leading) {
-                                NavigationLink("Create a 3D Model", destination: CreateModelView(model: model))
+                                NavigationLink("Create a 3D Model", destination: CreateModelView())
                                 Text("Free")
                             }
                         }
@@ -44,8 +44,9 @@ struct WelcomePageView: View {
 }
 
 struct WelcomePageView_Previews: PreviewProvider {
-    @StateObject private static var model = CameraViewModel()
+//    @StateObject private static var model = CameraViewModel()
     static var previews: some View {
-        WelcomePageView(model: model)
+//        WelcomePageView(model: model)
+        WelcomePageView()
     }
 }
